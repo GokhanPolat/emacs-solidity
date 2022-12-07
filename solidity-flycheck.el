@@ -109,6 +109,17 @@ lint without erorr."
   :safe #'booleanp
   :package-version '(solidity-mode . "0.1.11"))
 
+(defcustom solidity-flycheck-solc-usermapping nil
+  "A list of paths that should be passed to solc.
+
+This tweak very handy for foundry's library remappings.
+
+"
+  :group 'solidity
+  :type 'list
+  :safe #'listp
+  :package-version '(solidity-mode . "0.1.11"))
+
 (defun solidity-flycheck--find-working-directory (_checker)
   "Look for a working directtory to run solium CHECKER in.
 
@@ -225,11 +236,16 @@ no .soliumrc.json is found, `project-roots' is used."
     (when (not (string= "" allow-paths))
       `("--allow-paths" ,allow-paths))))
 
+(defun solidity-flycheck--solc-usermapping-opt ()
+  (let* ((usermappings solidity-flycheck-solc-usermapping))
+   usermappings))
+
 (defun solidity-flycheck--solc-cmd ()
   `(,solidity-solc-path
     (eval
      (when (solc-gt-0.6.0)
        `("--no-color"
+         ,@(solidity-flycheck--solc-usermapping-opt)
          ,@(solidity-flycheck--solc-allow-paths-opt)
          ,@(solidity-flycheck--solc-remappings-opt))))
     source-inplace))

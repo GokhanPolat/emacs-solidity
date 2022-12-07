@@ -474,8 +474,9 @@ Highlight the 1st result."
 ;; solidity syntax table
 (defvar solidity-mode-syntax-table
   (let ((st (make-syntax-table)))
-    ;; '_' underscore is a valid part of a word
+    ;; Underscore ('_') and dollar sign ('$') are valid parts of a word.
     (modify-syntax-entry ?_ "w" st)
+    (modify-syntax-entry ?$ "w" st)
     ;; c++ style comments in the syntax table
     ;; more info on the syntax flags here:
     ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Syntax-Flags.html
@@ -551,14 +552,16 @@ Cursor must be at the function's name.  Does not currently work for constructors
   (let* ((spacetabs "[\t\n ]+")
          (optional-spacetabs "[\t\n ]*")
          (ident-group "\\([A-Za-z_][A-Za-z0-9_]*\\)")
-         (ctr-ident-group "\\(constructor\\)")
+         (constructor-ident-group "\\(constructor\\)")
+         (fallback-ident-group "\\(fallback\\)")
          (modifier (mapconcat 'identity
                               '("payable" "public" "private" "external" "internal" "view" "pure")
                               "\\|"))
          (modifiers (concat "\\(?:\\(?:" modifier "\\)" spacetabs "\\)*")))
     `(("function", (concat "^" optional-spacetabs "function" spacetabs ident-group) 1)
       ("modifier", (concat "^" optional-spacetabs "modifier" spacetabs ident-group) 1)
-      ("constructor", (concat "^" optional-spacetabs ctr-ident-group) 1)
+      ("constructor", (concat "^" optional-spacetabs constructor-ident-group) 1)
+      ("function", (concat "^" optional-spacetabs fallback-ident-group) 1)
       ("contract", (concat "^" optional-spacetabs "contract" spacetabs ident-group) 1)
       ("library", (concat "^" optional-spacetabs "library" spacetabs ident-group) 1)
       ("interface", (concat "^" optional-spacetabs "interface" spacetabs ident-group) 1)
